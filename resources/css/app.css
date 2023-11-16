@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+	font-family: 'TTNorms';
+	src: url('/fonts/TTNorms-Medium.ttf');
+}
+
+@font-face {
+	font-family: 'TTNorms-Bold';
+	src: url('/fonts/TTNorms-Bold.ttf');
+}
+
+body {
+	font-family: 'TTNorms';
+	font-variant-ligatures: none;
+}
