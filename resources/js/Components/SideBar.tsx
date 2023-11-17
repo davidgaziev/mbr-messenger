@@ -15,7 +15,8 @@ const SideBar: React.FC<ISideBarProps> = ({ user }) => {
 			<div className="flex flex-col items-center">
 				<div>
 					<img
-						src="/images/userPhoto.png"
+						className="h-20 w-20 rounded-full"
+						src={user.avatar_url}
 						alt=""
 					/>
 				</div>

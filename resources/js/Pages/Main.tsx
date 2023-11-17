@@ -6,7 +6,7 @@ import { Head } from '@inertiajs/react'
 export default function Main({ auth }: PageProps) {
 	return (
 		<AuthenticatedLayout user={auth.user}>
-			<Head title="Home"></Head>
+			<Head title="Home" />
 		</AuthenticatedLayout>
 	)
 }
