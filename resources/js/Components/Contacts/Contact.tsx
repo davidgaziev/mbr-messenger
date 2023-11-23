@@ -1,9 +1,15 @@
 import React, { FC } from 'react'
 import { IContact } from './types'
 
-const Contact: FC<{ contact: IContact }> = ({ contact }) => {
+const Contact: FC<{
+	contact: IContact
+	onClick: React.MouseEventHandler<HTMLLIElement>
+}> = ({ contact, onClick }) => {
 	return (
-		<li className="flex cursor-pointer gap-2 py-2 pl-12 hover:bg-white hover:bg-opacity-25">
+		<li
+			onClick={onClick}
+			className="flex cursor-pointer gap-2 py-2 pl-12 hover:bg-white hover:bg-opacity-25"
+		>
 			<img
 				className="h-10 w-10 rounded-full"
 				src={contact.avatar_url}
