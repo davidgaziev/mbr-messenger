@@ -11,9 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('bio', 70)->nullable();
-        });
+        DB::statement('ALTER TABLE users ADD COLUMN requests integer[]');
     }
 
     /**
@@ -22,7 +20,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->drop('bio');
+            $table->drop('requests');
         });
     }
 };
