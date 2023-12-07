@@ -44,4 +44,19 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function requestAdr()
+    {
+        return $this->hasMany(Request::class, 'addressee', 'id');
+    }
+
+    public function requestReq()
+    {
+        return $this->hasMany(Request::class, 'requester', 'id');
+    }
+
+    // public function requestId()
+    // {
+    //     return $this->hasMany(Request::class, 'requestId', 'id');
+    // }
 }
