@@ -1,30 +1,79 @@
-import { Head, Link } from '@inertiajs/react'
+import { Head } from '@inertiajs/react'
 import AuthenticatedLayout from '../Layouts/AuthenticatedLayout'
 import { PageProps } from '../types'
 import TextInput from '@/Components/TextInput'
 import { Loader } from '@mantine/core'
 import SearchIcon from '@/icons/SearchIcon'
 import { useEffect, useState } from 'react'
-import { IContact } from '@/Components/Contacts/types'
+import { IContact, Status } from '@/Components/Contacts/types'
 import Contact from '@/Components/Contacts/Contact'
+import ContactCard from '@/Components/Contacts/ContactCard'
 import axios from 'axios'
+import { log } from 'console'
 
 const Contacts = ({ auth }: PageProps) => {
 	const [contacts, setContacts] = useState<IContact[]>([])
-	const [contact, setContact] = useState<IContact | null>(null)
+	const [userContacts, setUserContacts] = useState<IContact[]>([])
+	const [contact, setContact] = useState<IContact>()
+	const [requestStatus, setRequestStatus] = useState<Status>()
+	const [loading, setLoading] = useState(false)
 
 	useEffect(() => {
 		const fetchContacts = async () => {
 			try {
-				const response = await axios.get('/api/contacts')
+				const response = await axios.get('/api/contacts', {
+					params: { userID: auth.user.id }
+				})
 				setContacts(response.data)
 			} catch (error) {
 				console.error('Error fetching users:', error)
 			}
 		}
-
 		fetchContacts()
 	}, [])
+
+	useEffect(() => {
+		if (auth.user.contacts.length > 2 && contacts.length) {
+			getUserContacts()
+		}
+	}, [contacts])
+
+	const selectContact = async (requester: number, addressee: number) => {
+		setContact(undefined)
+		setRequestStatus(undefined)
+		setLoading(true)
+
+		try {
+			const response = await axios.get('/api/has-request', {
+				params: { requester: requester, addressee: addressee }
+			})
+
+			setRequestStatus(response.data.status)
+			setLoading(false)
+		} catch (error) {
+			console.error('Error fetching status:', error)
+		}
+	}
+
+	const getUserContacts = () => {
+		let userContacts = []
+		const userContactsID = auth.user.contacts
+			.slice(1, -1)
+			.split('')
+			.map((c) => Number(c))
+
+		console.log(userContactsID)
+
+		for (let i = 0; i < userContactsID.length; i++) {
+			for (let j = 0; j < contacts.length; j++) {
+				if (contacts[j].id == userContactsID[i]) {
+					userContacts.push(contacts[j])
+				}
+			}
+		}
+
+		setUserContacts(userContacts)
+	}
 
 	return (
 		<AuthenticatedLayout user={auth.user}>
@@ -42,17 +91,43 @@ const Contacts = ({ auth }: PageProps) => {
 						</div>
 
 						{contacts.length ? (
-							<ul className="py-4">
-								{contacts.map((contact) =>
-									contact.id != auth.user.id ? (
-										<Contact
-											key={contact.id}
-											contact={contact}
-											onClick={() => setContact(contact)}
-										/>
-									) : null
-								)}
-							</ul>
+							<>
+								<ul className="py-4">
+									{contacts.map((contact) =>
+										contact.id != auth.user.id ? (
+											<Contact
+												key={contact.id}
+												contact={contact}
+												onClick={() => {
+													selectContact(auth.user.id, contact.id)
+													setContact(contact)
+												}}
+											/>
+										) : null
+									)}
+								</ul>
+								<div>
+									<h2 className="flex justify-center text-xl font-bold">
+										Ваши контакты
+									</h2>
+									{userContacts.length ? (
+										<ul>
+											{userContacts.map((c) => (
+												<Contact
+													key={c.id}
+													contact={c}
+													onClick={() => {
+														setRequestStatus('contacted')
+														setContact(c)
+													}}
+												/>
+											))}
+										</ul>
+									) : (
+										<p>У вас нет контактов</p>
+									)}
+								</div>
+							</>
 						) : (
 							<div className="flex h-5/6 w-full items-center justify-center">
 								<Loader
@@ -63,48 +138,25 @@ const Contacts = ({ auth }: PageProps) => {
 							</div>
 						)}
 					</aside>
-					{contact ? (
-						<div className="flex grow flex-col items-center justify-center px-12 py-20">
-							<div className="h-3/4 w-2/5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-500 text-white">
-								<div
-									className="after:content-[' '] relative flex flex-col items-center pb-4 pt-8 after:absolute after:bottom-1 after:h-2 
-													after:w-full after:border after:border-cyan-800 after:bg-cyan-800 after:opacity-50"
-								>
-									<img
-										className="w-24 rounded-full"
-										src={contact.avatar_url}
-										alt=""
-									/>
-									<h2 className="py-2 text-3xl font-medium">{contact.name}</h2>
-								</div>
-
-								<div className="px-16">
-									{contact.bio ? (
-										<div className="my-4 leading-5">
-											<p className="text-lg leading-5">{contact.bio}</p>
-											<span className="text-sm font-medium text-gray-500">
-												Bio
-											</span>
-										</div>
-									) : null}
-
-									<div className="my-4 leading-5">
-										<p className="text-lg">@{contact.login}</p>
-										<span className="text-sm font-medium text-gray-500">
-											Username
-										</span>
-									</div>
-								</div>
-
-								<div
-									className="hover:after:content-[' '] relative px-16 after:cursor-pointer hover:after:absolute hover:after:-bottom-1 hover:after:left-0 hover:after:w-full 
-									hover:after:border hover:after:border-cyan-800 hover:after:bg-cyan-800 hover:after:py-4 hover:after:opacity-50"
-								>
-									<button className="font-medium ">ADD TO CONTACTS</button>
-								</div>
-							</div>
+					{!loading ? (
+						contact && requestStatus ? (
+							<ContactCard
+								user={auth.user}
+								contact={contact}
+								status={requestStatus}
+								setStatus={setRequestStatus}
+								afterAcceptHandle={getUserContacts}
+							/>
+						) : null
+					) : (
+						<div className="flex w-3/4 items-center justify-center">
+							<Loader
+								type="bars"
+								size="xl"
+								color="blue"
+							/>
 						</div>
-					) : null}
+					)}
 				</div>
 			</section>
 		</AuthenticatedLayout>

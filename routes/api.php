@@ -3,6 +3,9 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\RequestController;
+use App\Http\Controllers\NotificationsController;
+use App\Http\Controllers\ContactController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,3 +23,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('/contacts', [UserController::class, 'index']);
+
+Route::post('/make-request', [RequestController::class, 'setRequest']);
+
+Route::get('/notifications', [NotificationsController::class, 'index']);
+
+Route::get('/has-request', [ContactController::class, 'hasRequest']);
+
+

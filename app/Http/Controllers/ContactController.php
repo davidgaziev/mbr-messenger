@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Request as UserRequest;
@@ -15,6 +16,16 @@ class ContactController extends Controller {
     $existsInRequests = UserRequest::where('addressee', $addressee)
     ->where('requester', $requester)
     ->exists();
+
+    $contacted = DB::table('users')
+    ->where('id', $requester)
+    ->whereRaw('contacts @> ARRAY[?]::int[]', [$addressee])
+    ->exists();
+
+  
+    if($contacted) {
+      return response()->json(['status' => 'contacted']);
+    }
 
     if($existsInRequests) {
       return response()->json(['status' => 'pending']);

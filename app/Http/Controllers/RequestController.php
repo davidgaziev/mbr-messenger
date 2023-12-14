@@ -32,13 +32,7 @@ class RequestController extends Controller
 
         return response()->json([
             'status' => 'success', 
-            'userAdr' => $userAdr, 
-            'user' => $user,
-            'userReq' => $userReq,
-            'userRequester' => $userRequester,
-            'reqId' => $reqId,
         ], 200);
-        
     }
 
    

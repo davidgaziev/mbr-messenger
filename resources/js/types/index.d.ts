@@ -7,6 +7,7 @@ export interface User {
 	email: string
 	email_verified_at: string
 	avatar_url: string
+	contacts: string
 }
 
 export interface ISVG extends SVGProps<SVGAElement> {

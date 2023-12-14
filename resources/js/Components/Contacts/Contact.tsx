@@ -3,7 +3,7 @@ import { IContact } from './types'
 
 const Contact: FC<{
 	contact: IContact
-	onClick: React.MouseEventHandler<HTMLLIElement>
+	onClick?: React.MouseEventHandler<HTMLLIElement>
 }> = ({ contact, onClick }) => {
 	return (
 		<li
@@ -11,7 +11,7 @@ const Contact: FC<{
 			className="flex cursor-pointer gap-2 py-2 pl-12 hover:bg-white hover:bg-opacity-25"
 		>
 			<img
-				className="h-10 w-10 rounded-full"
+				className="h-10 w-10 rounded-full border-2 border-blue-900"
 				src={contact.avatar_url}
 				alt=""
 			/>

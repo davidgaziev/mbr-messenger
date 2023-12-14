@@ -5,3 +5,5 @@ export interface IContact {
 	bio?: string
 	avatar_url: string
 }
+
+export type Status = 'none' | 'pending' | 'success' | 'respond' | 'contacted'
