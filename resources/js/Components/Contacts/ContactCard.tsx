@@ -133,7 +133,7 @@ const ContactCard: FC<{
 						className="rounded-lg"
 						onClick={() => {
 							setLoading(true)
-							addContact(user.id, contact.id, 'friend')
+							addContact(contact.id, user.id, 'friend')
 						}}
 					>
 						ADD TO CONTACTS

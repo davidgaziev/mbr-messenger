@@ -67,6 +67,9 @@ const SideBar: React.FC<ISideBarProps> = ({ user }) => {
 						</NavLink>
 					</li>
 				))}
+				<li className="w-fit rounded-lg bg-blue-400 p-2 font-bold text-white">
+					<a href="">Subcribe to Premium</a>
+				</li>
 			</ul>
 
 			<div className="flex flex-grow items-end">

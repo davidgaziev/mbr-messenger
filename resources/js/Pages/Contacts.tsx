@@ -9,7 +9,6 @@ import { IContact, Status } from '@/Components/Contacts/types'
 import Contact from '@/Components/Contacts/Contact'
 import ContactCard from '@/Components/Contacts/ContactCard'
 import axios from 'axios'
-import { log } from 'console'
 
 const Contacts = ({ auth }: PageProps) => {
 	const [contacts, setContacts] = useState<IContact[]>([])
