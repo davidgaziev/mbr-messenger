@@ -18,9 +18,11 @@ class NotificationsController extends Controller {
 
     foreach($notifications as $n) {
       $requesterName = User::findOrFail($n->requester)->name;
+      $requesterID = User::findOrFail($n->requester)->id;
       
       $notificationResult['type'] = $n->type;
       $notificationResult['requester'] = $requesterName;
+      $notificationResult['requesterID'] = $requesterID;
       $notificationResult['id'] = $n->id;
 
       array_push($result, $notificationResult);
