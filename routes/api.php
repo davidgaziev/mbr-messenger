@@ -6,6 +6,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\NotificationsController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\ChatController;
+use App\Http\Controllers\MessageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,5 +31,13 @@ Route::post('/make-request', [RequestController::class, 'setRequest']);
 Route::get('/notifications', [NotificationsController::class, 'index']);
 
 Route::get('/has-request', [ContactController::class, 'hasRequest']);
+
+Route::post('/chats', [ChatController::class, 'createChat']);
+
+Route::get('/chats/{chatId}', [ChatController::class, 'getChat']);
+
+Route::post('/chats/{chatId}/messages', [MessageController::class, 'sendMessage']);
+
+Route::get('/chats/{chatId}/messages', [MessageController::class, 'getMessages']);
 
 

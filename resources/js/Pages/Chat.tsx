@@ -12,13 +12,12 @@ import { Loader } from '@mantine/core'
 
 const Chat = ({ auth }: PageProps) => {
 	const [loading, setLoading] = useState(false)
+	const [chatId, setChatId] = useState<null | number>(0)
 	const [userContacts, setUserContacts] = useState<IContact[]>([])
 	const [contacts, setContacts] = useState<IContact[]>([])
 	const [chatContact, setChatContact] = useState<IContact>()
 
 	useEffect(() => {
-		setLoading(true)
-
 		const fetchContacts = async () => {
 			try {
 				const response = await axios.get('/api/contacts', {
@@ -29,7 +28,7 @@ const Chat = ({ auth }: PageProps) => {
 				console.error('Error fetching users:', error)
 			}
 		}
-
+		setLoading(true)
 		fetchContacts()
 	}, [])
 
@@ -51,11 +50,35 @@ const Chat = ({ auth }: PageProps) => {
 			setUserContacts(userContacts)
 		}
 
-		if (auth.user.contacts.length > 2) {
+		if (auth.user.contacts.length > 2 && contacts.length) {
 			getUserContacts()
 			setLoading(false)
 		}
 	}, [contacts])
+
+	const getChat = async (chatID: number) => {
+		try {
+			setChatId(null)
+			const response = await axios.get(`/api/chats/${chatID}`)
+			if (response.data.error) {
+				return false
+			} else return response.data.chat_id
+		} catch (error) {
+			console.error('Error fetching users:', error)
+		}
+	}
+
+	const createChat = async (chatID: number) => {
+		try {
+			const response = await axios.post('/api/chats', {
+				id: chatID
+			})
+			if (response.data.chat_id) return response.data.chat_id
+		} catch (e) {
+			console.error('Error creating chat', e)
+		}
+		return false
+	}
 
 	return (
 		<AuthenticatedLayout user={auth.user}>
@@ -72,26 +95,56 @@ const Chat = ({ auth }: PageProps) => {
 							/>
 						</div>
 						{loading ? (
-							<Loader
-								type="bars"
-								size="xl"
-								color="white"
-							/>
+							<div className="flex h-5/6 w-full items-center justify-center">
+								<Loader
+									type="bars"
+									size="xl"
+									color="white"
+								/>
+							</div>
 						) : userContacts.length ? (
 							<ul>
 								{userContacts.map((c) => (
 									<Contact
 										key={c.id}
 										contact={c}
-										onClick={() => setChatContact(c)}
+										onClick={async () => {
+											setChatContact(c)
+											const chat1 = await getChat(c.id)
+											const chat2 = await getChat(auth.user.id)
+											if (chat1 || chat2) {
+												const chatID = chat1 ? chat1 : chat2
+												setChatId(chatID)
+											} else {
+												setChatId(await createChat(c.id))
+											}
+										}}
 									/>
 								))}
 							</ul>
 						) : (
-							<p>У вас нет контактов</p>
+							<div className="flex h-5/6 w-full items-center justify-center">
+								<p>У вас нет контактов</p>
+							</div>
 						)}
 					</aside>
-					{chatContact ? <ChatCard contact={chatContact} /> : null}
+					{chatContact ? (
+						chatId == null ? (
+							<div className="flex w-3/4 items-center justify-center">
+								<Loader
+									type="bars"
+									size="xl"
+									color="blue"
+								/>
+							</div>
+						) : (
+							<ChatCard
+								contact={chatContact}
+								chatID={chatId}
+								user={auth.user}
+							/>
+						)
+					) : null}
 				</div>
 			</section>
 		</AuthenticatedLayout>
