@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\SubscriptionController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -51,5 +52,12 @@ Route::middleware('auth')->group(function () {
 Route::get('/accept-contact', [UserController::class, 'acceptContact'])->middleware('auth');
 Route::get('/remove-contact', [UserController::class, 'removeContact'])->middleware('auth');
 Route::get('/reject-contact', [UserController::class, 'rejectContact'])->middleware('auth');
+
+Route::get('/subscribe', function () {
+    return Inertia::render('Subscription');
+})->middleware(['auth', 'verified'])->name('subscription');
+Route::post('/subscribe', [SubscriptionController::class, 'processSubscription']);
+
+Route::get('/billing', [SubscriptionController::class, 'billing']);
 
 require __DIR__.'/auth.php';

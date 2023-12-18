@@ -67,9 +67,19 @@ const SideBar: React.FC<ISideBarProps> = ({ user }) => {
 						</NavLink>
 					</li>
 				))}
-				<li className="w-fit rounded-lg bg-blue-400 p-2 font-bold text-white">
-					<a href="">Subcribe to Premium</a>
-				</li>
+				{!user.premium ? (
+					<NavLink
+						active={route().current('subscription')}
+						href="subscribe"
+						className="w-1/4 rounded-lg p-2 font-bold text-blue-400"
+					>
+						Subcribe to Premium
+					</NavLink>
+				) : (
+					<p className="w-fit rounded-lg bg-blue-500 p-2 font-bold text-white">
+						You are premium!
+					</p>
+				)}
 			</ul>
 
 			<div className="flex flex-grow items-end">
